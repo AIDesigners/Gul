@@ -1,10 +1,14 @@
 # Gul
-The Python Neural Compiler is about
+<p align="justify">The Python Neural Compiler 'Gul' (flower in Urdu) is a generalization of Recurrent Neural Nets, RNN, architecture via creating of (polymorphic) neural nets with external memories stack. The structure of NN in Gul is defined as assemble of rather simple, several layers only, neural nets. The assembly, in turn, can be of arbitrary size, but as a test example I’ll show how it works with simple assembly of only five nets.</p>
+<p align="justify">Lets assume that our decision/classification is dependent on unstructured data. Let assume the given object is described in 3 sentences - Fact_A, Fact_B, Fact_C. Let’s also assume that Fact_B and Fact_C uses close language/words (Fact_B is mention later so we assume it’s to be more specific while Fact_C is, probably, more generic), but Fact_A is some distinct characteristic as if follows from semantic distance analysis. The scheme of classification process is then described on the left in fig below. To train machine on this irregular/unstructured data we dynamically compile a classification process tree (on the right of the fig).</p> 
 
 <img src=https://github.com/AIDesigners/Gul/blob/master/doc/fig1.png /img>
 
+<p align="justify">The nets assembly consists of 3 neural functions. Initially three call to a fact analyzing routine form a memories stack. The routines are simple three-layered perceptron which is ‘written’ via training. The perceptron takes existing memories stack (zeroes at the leaves) and a new input fact represented as a numpy array. The new knowledge is integrated into current memories stack via passing the data through fact analyzing perceptron so it’s output is the updated memories stack. This way Fact_C updates empty memories stack, then Fact_B updates memories stack creating by analyzing of Fact_C and Fact_A creates independent branch of memories.</p>
+<p align="justify">At the second stage the memories about Fact_A and (Fact_B+Fact_C) are merged with second perceptron network, called memories aggregator. It takes two (independent) memories stacks and synthetases a joined one. Although not in this simple example, but memory aggregators can also be nested similarly to fact analyzing blocks (probably depending on similarity of facts chains).</p>
+<p align="justify">Eventually a process tree ends with one memories stack which holds all data extracted from the bag of facts. The third neural function, classifier, is applied to resulting memories stack to make a conclusion about the described object.</p>
 
-To compute (or train) the net above you need to execute the code:
+<p align="left">To compute (or train) the net above with Gul one need to execute the simple Pythonic code bellow:</p>
 <pre><code><i>
 #Define neural functions
 nfunct2 = nncp.nf_perceptron(name = "nfunct2", size_in = SIZE_MSTACK,               size_mid = SIZE_N2*2 + 1,           size_out = 1,           trainable = True, dtype = np.float32)
