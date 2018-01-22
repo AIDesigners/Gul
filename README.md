@@ -1,6 +1,9 @@
 # Gul
 The Python Neural Compiler is about
 
+<img src=https://github.com/AIDesigners/Gul/blob/master/doc/fig1.png /img>
+
+
 To compute (or train) the net above you need to execute the code:
 <pre><code><i>
 #Define neural functions
