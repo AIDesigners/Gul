@@ -3,7 +3,7 @@ The Python Neural Compiler is about
 
 To compute (or train) the net above you need to execute the code:
 <pre><code><i>
-#define neural functions
+#Define neural functions
 nfunct2 = nncp.nf_perceptron(name = "nfunct2", size_in = SIZE_MSTACK,               size_mid = SIZE_N2*2 + 1,           size_out = 1,           trainable = True, dtype = np.float32)
 nfunct1 = nncp.nf_perceptron(name = "nfunct1", size_in = SIZE_MSTACK + SIZE_MSTACK, size_mid = SIZE_N1*2 + SIZE_MSTACK, size_out = SIZE_MSTACK, trainable = True, dtype = np.float32)
 nfunct0 = nncp.nf_perceptron(name = "nfunct0", size_in = SIZE_MSTACK + SIZE_IN,     size_mid = SIZE_N0*2 + SIZE_MSTACK, size_out = SIZE_MSTACK, trainable = True, dtype = np.float32)
