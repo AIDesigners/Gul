@@ -44,3 +44,8 @@ nfunct0.set_net(np.asarray(PARAMS_NN0, dtype=np.float32))
 
 <p align="justify">The Gul is designed to deal with unstructured data where one can apply ideas of describing knowledge as processes. Natural language is a perfect examples because it intensively uses trajectories frames speaking about all variety of things. Say, <i>prices rises</i> or <i>market goes down</i>, <i>weather improves</i> or <i>mind blows up</i>  and so on… Another potential example is video surveillance or sport observations; in these domains one can use convolution nets to recognize objects or persons and the processes tree framework to classify of what they are doing.</p>
 
+## Further plans
+
+<p>In the neares future I'll add facts representation code with examples.</p>
+<p>It's also schedulled to add support of Spark (<a href="https://github.com/AIDesigners/AIDesigners.github.io-cluster_setup">meanwhile you can install it</a>) into Gul so it car natively run on scale.</p>
+
