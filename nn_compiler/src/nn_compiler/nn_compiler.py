@@ -1,5 +1,5 @@
 
-from Tree import gTree, gNode
+from data_structures.Tree import gTree, gNode
 import numpy as np
 import caffe
 import types
@@ -12,7 +12,7 @@ class nfunct(object):
     def __new__(cls, *args, **kwargs): 
         assert (isinstance(cls, type(nfunct)) and cls.__name__ != "nfunct" ),  "Caught constructor in non-instantiable class"
         #Check for virtual methods
-        virtual_methods = ['init_net', 'calc_v', 'calc_dv', 'init_grad'] ; real_methods = [ real_method for real_method in dir(cls) if (isinstance(getattr(cls,real_method,None), types.FunctionType)) ]
+        virtual_methods = ['init_net', 'calc_v', 'init_grad', 'calc_dv'] ; real_methods = [ real_method for real_method in dir(cls) if (isinstance(getattr(cls,real_method,None), types.FunctionType)) ]
         assert set(virtual_methods).issubset(set(real_methods)), "Inheritance error: not all virtual methods are implemented in the derived class" 
         return object.__new__(cls) #Make it's derived instance 
     def __init__(self, name = "perceptron", size_in = 1024, size_mid = 3072, size_out = 1024, trainable = True, dtype = np.float32):
@@ -61,7 +61,16 @@ class nf_perceptron(nfunct):
         p[ shift : shift + (self.size_mid-self.size_out)//2 * self.size_out] = self.net.params['fc2'][0].data[...].reshape((self.size_mid-self.size_out)/2* self.size_out) ; shift += (self.size_mid-self.size_out)//2 * self.size_out
         p[ shift : shift + self.size_out] = self.net.params['fc2'][1].data[...] ; shift += self.size_out
 
-    def calc_v(self, v): pass
+    def calc_v(self, v): 
+        assert (isinstance(v, np.ndarray) and v.size == self.size_in + self.size_mid + self.size_out and v.dtype == self.dtype), "Incompatible activity array provided to calc_v()"
+        #Load data into the nfunct, forward it and save activities
+        self.net.blobs['data'].data[0][0][0][...] = v[ : self.size_in]    
+        self.net.forward() #forward_prefilled
+        blobs_iterator = iter(self.net.blobs) ; next(blobs_iterator) 
+        shift = self.size_in 
+        for blob in blobs_iterator :  
+            v[shift : shift + self.net.blobs[blob].data.size] = self.net.blobs[blob].data.flat[...] ; shift += self.net.blobs[blob].data.size
+
     def init_grad(self):
         if self.trainable : 
             if self.grad is not None and self.grad.size == self.size_grad : self.grad[ : ] = 0.
@@ -69,7 +78,13 @@ class nf_perceptron(nfunct):
     def calc_dv(self, v, dv): 
         assert (isinstance(v, np.ndarray) and v.size == self.size_in + self.size_mid + self.size_out and v.dtype == self.dtype), "Incompatible activity array provided to calc_dv()"
         assert (isinstance(dv, np.ndarray) and dv.size == self.size_out and dv.dtype == self.dtype), "Incompatible gradient array provided to calc_dv()"
+        #Load data into the nfunct, forward it and save activities
+        shift = 0
+        for blob in self.net.blobs :  
+            self.net.blobs[blob].data.flat[...] = v[shift : shift + self.net.blobs[blob].data.size]  ; shift += self.net.blobs[blob].data.size
+        #Do backpropagation    
         if self.trainable :
+            #The bug is to recover net state before gradient propagation
             diff = self.net.backward(['fc2', 'fc1', 'data'], sigmoid2 = dv.reshape((1,self.size_out)))
             shift = 0 
             self.grad[shift : shift + self.size_in  * (self.size_mid-self.size_out)//2] += np.outer(diff['fc1'].flatten(), v[ : self.size_in]).flatten() ; shift += self.size_in  * (self.size_mid-self.size_out)//2
@@ -120,24 +135,6 @@ class NeuralNode(gNode):
         assert isinstance(node, NeuralNode), "Trying insert unknown object into a neural node"
         while node in self.nodes : self.nodes.remove(node)              
         
-    #Memory management    
-    def allocate_vmem(self,  v = None):
-        if isinstance(v,  np.ndarray) : 
-            assert v.shape[0]  != self.nf.size_in + self.nf.size_med + self.nf.size_out, "Inappropriate size of preallocated array is passed"
-            self.v  = v
-        self.v  = np.empty(shape=(self.nf.size_in + self.nf.size_med + self.nf.size_out,), dtype=self.fn.dtype) 
-        return self.v
-    def free_vmem(self):
-        if self.v  is not None  : del(self.v)  ; self.v  = None
-    def allocate_dvmem(self, dv = None):        
-        if isinstance(dv, np.ndarray) : 
-            assert dv.shape[0] != self.nf.size_in + self.nf.size_med + self.nf.size_out, "Inappropriate size of preallocated array is passed"
-            self.dv = dv
-        self.dv = np.empty(shape=(self.nf.size_in + self.nf.size_med + self.nf.size_out,), dtype=self.fn.dtype) 
-        return self.dv
-    def free_dvmem(self):                     
-        if self.dv is not None : del(self.dv) ; self.dv = None
-        
                     
 #Process tree structure                    
 class pTree(gTree):
@@ -165,13 +162,7 @@ class pTree(gTree):
             if shift != nnode.nfunct.size_in : 
                 if nnode.nfn_transform_data is not None : nnode.nfn_transform_data(shift)
                 else                                    : nnode.v[shift : nnode.nfunct.size_in] = nnode.data[ : nnode.nfunct.size_in - shift]
-            #Load data into the nfunct, forward it and save activities
-            nnode.nfunct.net.blobs['data'].data[0][0][0][...] = nnode.v[ : nnode.nfunct.size_in]    
-            nnode.nfunct.net.forward() #forward_prefilled
-            blobs_iterator = iter(nnode.nfunct.net.blobs) ; next(blobs_iterator) 
-            shift = nnode.nfunct.size_in 
-            for blob in blobs_iterator :  
-                nnode.v[shift : shift + nnode.nfunct.net.blobs[blob].data.size] = nnode.nfunct.net.blobs[blob].data.flat[...] ; shift += nnode.nfunct.net.blobs[blob].data.size
+            nnode.nfunct.calc_v(nnode.v)    
             
     # A method to compute gradient of neurons activity (backward)
     def calc_dv(self, loss_grad):
@@ -185,4 +176,3 @@ class pTree(gTree):
                 nnnode.dv = nnnode.nfunct.calc_dv(nnnode.v, nnode.dv[shift : shift + nnnode.nfunct.size_out]) ; shift += nnnode.nfunct.size_out
             nnode.v = None ; nnode.dv = None  #free some memory  
 
-#self.root.nfunct.net.backward(['sigmoid2', 'fc2', 'sigmoid1', 'fc1', 'data'], sigmoid2 = lg)

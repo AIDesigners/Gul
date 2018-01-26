@@ -1,7 +1,7 @@
 
 import imp
 
-modules = set(["numpy", "data_structurews"])
+modules = set(["numpy", "data_structures"])
 
 for m in modules :
     try    : imp.find_module(m)
