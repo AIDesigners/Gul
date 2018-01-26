@@ -5,7 +5,7 @@
 <img src=https://github.com/AIDesigners/Gul/blob/master/doc/fig1.png /img>
 
 <p align="justify">The nets assembly consists of 3 different neural nets (called neural functions in Gul). Initially the fact analyzing routine is called three times to form memories stacks. The routine is a simple three-layered perceptron which is ‘written’ via training. Similarly to function it, however, has a strict signature - it inputs an array of memories, an array of fact representation and outputs an updated array of memories. In other words the fact analyzing perceptron takes existing memories stack (which is zeroes at leaves of the process tree) and a new input fact represented as numpy array. The new knowledge is then integrated into current memories stack via passing of the fact data through neural net so its output is the updated memories stack. This way Fact_C updates empty memories stack, then Fact_B updates memories stack, which was created by analyzing of Fact_C, and Fact_A creates independent branch of memories.</p>
-<p align="justify">At the second stage the memories about Fact_A and (Fact_B+Fact_C) are merged with second perceptron network, called memories aggregator. It takes two (independent) memories stacks and synthetases a joined one. Although not in this simple example, but memory aggregators can also be also nested, similarly to the case of nested fact analyzing calls.</p>
+<p align="justify">At the second stage the memories about Fact_A and (Fact_B+Fact_C) are merged with second perceptron network, called memories aggregator. It takes two (independent) memories stacks and synthetases a joined one. Although not in this simple example, but memory aggregators can also be nested, similarly to the case of nested fact analyzing calls.</p>
 <p align="justify">Eventually a memories updates ends up with one memories stack which holds all data extracted from the bag of provided facts. The third neural function, classifier, is applied to resulting memories stack to make a conclusion about the described object.</p>
 
 <p align="left">To compute (or train) the net assembly which is described above, with Gul, one need to execute the simple Pythonic code bellow:</p>
@@ -46,6 +46,9 @@ nfunct0.set_net(np.asarray(PARAMS_NN0, dtype=np.float32))
 
 ## Further plans
 
-<p>In the neares future I'll add facts representation code with examples.</p>
-<p>It is also schedulled to add support of Spark (<a href="https://github.com/AIDesigners/AIDesigners.github.io-cluster_setup">meanwhile you can install it</a>) into Gul so it can natively run on scale.</p>
-
+<p>In the neares future I'll:</p>
+<ul>
+<li>add facts representation code with examples.</li>
+<li>add support of Spark (<a href="https://github.com/AIDesigners/AIDesigners.github.io-cluster_setup">meanwhile you can install it</a>) into Gul so it can natively run on scale.</li>
+  <li>try <a href="https://en.wikipedia.org/wiki/DIIS">DIIS</a> optimization method for Gul solver.</li>
+</ul>
