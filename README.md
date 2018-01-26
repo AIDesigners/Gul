@@ -28,7 +28,7 @@ process_tree.calc_v()
 process_tree.calc_dv(np.array([1./process_tree.root.v[-1]], dtype=process_tree.root.nfunct.dtype))
 
 #Call your solver
-(PARAMS_NN0, PARAMS_NN1, PARAMS_NN2) = your_NN_solver(PARAMS_NN0, PARAMS_NN1, PARAMS_NN2)
+(PARAMS_NN0, PARAMS_NN1, PARAMS_NN2) = your_NN_solver(PARAMS_NN0, PARAMS_NN1, PARAMS_NN2, nfunct0.grad, nfunct1.grad, nfunct2.grad)
 
 #Update the net with new parameters
 nfunct2.set_net(np.asarray(PARAMS_NN2, dtype=np.float32))
@@ -47,5 +47,5 @@ nfunct0.set_net(np.asarray(PARAMS_NN0, dtype=np.float32))
 ## Further plans
 
 <p>In the neares future I'll add facts representation code with examples.</p>
-<p>It's also schedulled to add support of Spark (<a href="https://github.com/AIDesigners/AIDesigners.github.io-cluster_setup">meanwhile you can install it</a>) into Gul so it can natively run on scale.</p>
+<p>It is also schedulled to add support of Spark (<a href="https://github.com/AIDesigners/AIDesigners.github.io-cluster_setup">meanwhile you can install it</a>) into Gul so it can natively run on scale.</p>
 
