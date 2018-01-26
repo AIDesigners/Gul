@@ -38,7 +38,7 @@ nfunct0.set_net(np.asarray(PARAMS_NN0, dtype=np.float32))
 </i></code></pre>
 
 
-<p align="justify">Technically Gul is a python package which calls to Caffe C++ bindings to perform actual computations. Because nothing more than NumPy vectors summation is carried out in Python itself during NN surgeries, Gul adds only small overhead to overall computations. On the other hand, it provides all the power of general purpose language for dynamic NN assembling and rich collection of libraries, one to mention is NTLK.</p>
+<p align="justify">Technically Gul is a python package which calls to Caffe C++ bindings to perform actual computations. Because nothing more than NumPy vectors summation is carried out in Python itself during NN surgeries, Gul adds only small overhead to overall computations. On the other hand, it provides all the power of general purpose language for dynamic NN assembling and rich collection of libraries, one to mention is <a href="http://www.nltk.org/"NLTK</a>.</p>
 
 ## What it can be useful for?
 
