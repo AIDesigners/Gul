@@ -49,6 +49,6 @@ nfunct0.set_net(np.asarray(PARAMS_NN0, dtype=np.float32))
 <p>Soon I will:</p>
 <ul>
 <li>add facts representation code with examples.</li>
-<li>add support of Spark (<a href="https://github.com/AIDesigners/AIDesigners.github.io-cluster_setup">meanwhile you can install it</a>) into Gul so it can natively run on scale.</li>
+<li>add support of Spark (meanwhile you can install it as we <a href="https://github.com/AIDesigners/AIDesigners.github.io-cluster_setup">described</a> previously) into Gul so it can natively run on scale.</li>
   <li>try <a href="https://en.wikipedia.org/wiki/DIIS">DIIS</a> optimization method for Gul solver.</li>
 </ul>
